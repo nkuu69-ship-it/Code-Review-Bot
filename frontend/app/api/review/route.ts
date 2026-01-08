@@ -1,36 +1,31 @@
 import { type NextRequest, NextResponse } from "next/server"
 
+const BACKEND_URL = process.env.BACKEND_URL || "http://127.0.0.1:8000"
+
 export async function POST(request: NextRequest) {
   try {
-    const { code, language } = await request.json()
+    const body = await request.json()
 
-    if (!code || !language) {
-      return NextResponse.json({ error: "Code and language are required" }, { status: 400 })
+    const response = await fetch(`${BACKEND_URL}/api/review`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+    })
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      return NextResponse.json(errorData, { status: response.status });
     }
 
-    // Mock response for demonstration
-    // In production, this would call an actual AI service
-    const mockIssues = [
-      {
-        line: 2,
-        severity: "Improvement",
-        explanation: "Consider initializing the total variable inline for better readability.",
-        suggested_fix: 'total = sum(item["price"] for item in items)',
-      },
-      {
-        line: 3,
-        severity: "Warning",
-        explanation: "Using a for loop for summation is less efficient. Consider using built-in functions.",
-        suggested_fix: "Use list comprehension with sum() function",
-      },
-    ]
-
-    // Simulate API delay
-    await new Promise((resolve) => setTimeout(resolve, 1500))
-
-    return NextResponse.json({ issues: mockIssues })
+    const data = await response.json()
+    return NextResponse.json(data)
   } catch (error) {
-    console.error("Review API error:", error)
-    return NextResponse.json({ error: "Failed to review code" }, { status: 500 })
+    console.error("Review API proxy error:", error)
+    return NextResponse.json(
+      { error: "Failed to connect to review service" },
+      { status: 500 }
+    )
   }
 }
