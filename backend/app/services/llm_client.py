@@ -1,5 +1,6 @@
 import json
 from typing import List, Optional, Any, Dict
+import re
 
 from app.core.config import settings
 from app.services.prompt_builder import PromptBuilder
@@ -130,11 +131,18 @@ class LLMClient:
 
     def _clean_json_markdown(self, content: str) -> str:
         content = content.strip()
-        if content.startswith("```json"):
-            content = content[7:]
-        elif content.startswith("```"):
-            content = content[3:]
         
-        if content.endswith("```"):
-            content = content[:-3]
-        return content.strip()
+        # Try to find JSON within code blocks
+        match = re.search(r"```(?:json)?\s*(\{.*?\})\s*```", content, re.DOTALL)
+        if match:
+            return match.group(1)
+            
+        # Fallback: Find the first outer-most JSON object
+        # This handles cases where there are no code blocks but just raw JSON with potential noise
+        start = content.find("{")
+        end = content.rfind("}")
+        
+        if start != -1 and end != -1 and end > start:
+            return content[start:end+1]
+            
+        return content

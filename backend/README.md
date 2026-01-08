@@ -1,6 +1,6 @@
 # AI Code Review Bot - Backend
 
-A FastAPI-based backend for an AI-powered code review assistant. It combines static analysis (AST/regex) with LLM-based analysis (OpenAI) to provide comprehensive code feedback and **auto-fixing** capabilities.
+A FastAPI-based backend for an AI-powered code review assistant. It combines static analysis (AST/regex) with LLM-based analysis (Hugging Face) to provide comprehensive code feedback and **auto-fixing** capabilities.
 
 ## Features
 
@@ -17,7 +17,7 @@ A FastAPI-based backend for an AI-powered code review assistant. It combines sta
 - Python 3.10+
 - FastAPI
 - Pydantic
-- OpenAI Python SDK
+- Hugging Face Hub
 
 ## Setup
 
@@ -30,10 +30,9 @@ A FastAPI-based backend for an AI-powered code review assistant. It combines sta
 2. **Environment Variables**
    Create a `.env` file in the `backend/` directory:
    ```env
-   OPENAI_API_KEY=sk-...
+   HUGGINGFACE_API_TOKEN=hf_...
    # Optional
-   OPENAI_BASE_URL=https://api.openai.com/v1
-   LLM_MODEL=gpt-4-turbo-preview
+   LLM_MODEL=meta-llama/Meta-Llama-3-8B-Instruct
    ```
 
 3. **Run the Server**
